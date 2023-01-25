@@ -2,48 +2,110 @@
 @model ApplicationSecurityAssignment.Pages.Account.RegisterModel
 @{
 }
-<div class="container h-100">
-    <div class="d-flex justify-content-center h-100">
-        <div class="user_card">
-            <div class="d-flex justify-content-center">
-                <div class="brand_logo_container">
-                    <img src="https://cdn.freebiesupply.com/logos/large/2x/pinterest-circle-logo-png-transparent.png" class="brand_logo" alt="Logo" height="100" width="100">
-                </div>
-            </div>
-            <div class="d-flex justify-content-center form_container">
-                <form method="post">
-                    <div class="input-group mb-3">
-                        <div class="input-group-append">
-                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        </div>
-                        <input type="text" class="form-control" asp-for="RModel.FullName" placeholder="username">
-                    </div>
-                    <div class="input-group mb-2">
-                        <div class="input-group-append">
-                            <span class="input-group-text"><i class="fas fa-key"></i></span>
-                        </div>
-                        <input type="password" name="" class="form-control input_pass" value="" placeholder="password">
-                    </div>
-                    <div class="form-group">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="customControlInline">
-                            <label class="custom-control-label" for="customControlInline">Remember me</label>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-center mt-3 login_container">
-                        <button type="button" name="button" class="btn login_btn">Login</button>
-                    </div>
-                </form>
-            </div>
+<div class="container mt-5">
 
-            <div class="mt-4">
-                <div class="d-flex justify-content-center links">
-                    Have an account? <a asp-page="/Account/Login" class="ml-2">Login</a>
-                </div>
-                <div class="d-flex justify-content-center links">
-                    <a asp-page="/Account">Forgot your password?</a>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="row justify-content-center align-items-center">
+
+		<div class="col-sm-12 col-md-12 col-lg-8">
+			<h1 class="mb-3">Register </h1>
+			<div class="mb-3 d-flex">
+				<img id="imgPreview" class="rounded-circle mx-auto"
+					 style="height:300px;width:300px;object-fit:cover"
+					 src="/uploads/user.png" />
+			</div>
+			<div asp-validation-summary="All" class="text-danger"></div>
+			<form method="post" enctype="multipart/form-data">
+                <div class="row">
+					<div class="mb-3">
+						<input type="file" accept="image/jpg" asp-for="RModel.Photo"
+								class="form-control" onchange="showImgPreview(this)" />
+						<span asp-validation-for="RModel.Photo" class="text-danger"></span>
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label" asp-for="RModel.FullName">Full Name</label>
+						<input type="Text" asp-for="RModel.FullName" class="form-control" />
+						<span asp-validaton-for="RModel.FullName" class="text-danger"></span>
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label" asp-for="RModel.Email">Email Address</label>
+						<input type="Text" asp-for="RModel.Email" class="form-control" />
+						<span asp-validaton-for="RModel.Email" class="text-danger"></span>
+					</div>
+
+					<div class="mb-3">
+						<label class="col-sm-2 col-form-label" asp-for="RModel.Gender"></label>
+						<div class="col-sm-10 d-flex align-items-center">
+							<div class="form-check form-check-inline">
+								@Html.RadioButtonFor(m => m.RModel.Gender, "M",
+								new {@class = "form-check-input"})
+								<label class="form-check-label">Male</label>
+							</div>
+							<div class="form-check form-check-inline">
+								@Html.RadioButtonFor(m => m.RModel.Gender, "F",
+								new {@class = "form-check-input"})
+								<label class="form-check-label">Female</label>
+							</div>
+							<span asp-validation-for="RModel.Gender" class="text-danger"></span>
+						</div>
+					</div>
+
+
+					<div class="mb-3">
+						<label class="form-label" asp-for="RModel.MobileNumber">Mobile Number</label>
+						<input type="tel" asp-for="RModel.MobileNumber" class="form-control" />
+						<span asp-validaton-for="RModel.MobileNumber" class="text-danger"></span>
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label" asp-for="RModel.DeliveryAddress">Delivery Address</label>
+						<input type="Text" asp-for="RModel.DeliveryAddress" class="form-control" />
+						<span asp-validaton-for="RModel.DeliveryAddress" class="text-danger"></span>
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label" asp-for="RModel.CreditCard">Credit Card</label>
+						<input type="Text" asp-for="RModel.CreditCard" class="form-control" />
+						<span asp-validaton-for="RModel.CreditCard" class="text-danger"></span>
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label" asp-for="RModel.AboutMe">About Me</label>
+						<textarea rows="2" asp-for="RModel.AboutMe" class="form-control"></textarea>
+						<span asp-validaton-for="RModel.AboutMe" class="text-danger"></span>
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label" asp-for="RModel.Password">Password</label>
+						<input type="Text" asp-for="RModel.Password" class="form-control" />
+						<span asp-validaton-for="RModel.Password" class="text-danger"></span>
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label" asp-for="RModel.ConfirmPassword">Confirm Password</label>
+						<input type="Text" asp-for="RModel.ConfirmPassword" class="form-control" />
+						<span asp-validaton-for="RModel.ConfirmPassword" class="text-danger"></span>
+					</div>
+
+				</div>
+
+				<div class="d-grid mb-3">
+					<button type="submit" class="btn btn-primary">Register</button>
+				</div>
+			</form>
+		</div>
+	</div>
 </div>
+
+<script>
+	function showImgPreview(input) {
+		if (input.files[0]) {
+			var uploadimg = new FileReader();
+			uploadimg.onload = function (displayimg) {
+				$("#imgPreview").attr('src', displayimg.target.result);
+			}
+			uploadimg.readAsDataURL(input.files[0]);
+		}
+	}
+</script>

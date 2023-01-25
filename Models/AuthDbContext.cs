@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 namespace ApplicationSecurityAssignment.Models
 {
-    public class AuthDbContext : DbContext
+    public class AuthDbContext : IdentityDbContext<ApplicationUser>
     {
         private readonly IConfiguration _configuration;
         //public AuthDbContext(DbContextOptions<AuthDbContext> options):base(options){ }
