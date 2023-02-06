@@ -54,9 +54,10 @@ namespace Spoonful.Services
 			_db.SaveChanges();
         }
 
-        public void UpdateLastLogin(string UserName)
+        public void UpdateLastChanged(string UserName)
         {
-            
+			var user = _db.Users.Include(u => u.PreviousPassword).FirstOrDefault(x => x.UserName == UserName);
+            user.LastPasswordChanged = DateTimeOffset.UtcNow;
             _db.SaveChanges();
         }
 
@@ -104,6 +105,7 @@ namespace Spoonful.Services
 				Password = user.PasswordHash,
 			});
             user.PreviousPassword = passwordQ.ToList();
+            UpdateLastChanged(UserName);
             _db.SaveChanges();
 
 		}

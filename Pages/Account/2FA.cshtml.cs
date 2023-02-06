@@ -44,7 +44,8 @@ namespace ApplicationSecurityAssignment.Pages.Account
             {
                 TempData["FlashMessage.Text"] = "Successfully Logged In";
                 TempData["FlashMessage.Type"] = "success";
-                return RedirectToPage("/Home");
+				await userManager.UpdateSecurityStampAsync(user);
+				return RedirectToPage("/Home");
             }
             TempData["FlashMessage.Text"] = "Invalid OTP";
             TempData["FlashMessage.Type"] = "danger";

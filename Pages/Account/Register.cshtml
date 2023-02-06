@@ -77,14 +77,14 @@
 
 					<div class="mb-3">
 						<label class="form-label" asp-for="RModel.Password">Password</label>
-						<input type="Text" asp-for="RModel.Password" class="form-control" id="passwd"/>
+						<input type="password" asp-for="RModel.Password" class="form-control" id="passwd"/>
 						<span asp-validation-for="RModel.Password" class="text-danger"></span>
 						<span class="text-danger" id="pwvalidation"></span>
 					</div>
 
 					<div class="mb-3">
 						<label class="form-label" asp-for="RModel.ConfirmPassword">Confirm Password</label>
-						<input type="Text" asp-for="RModel.ConfirmPassword" class="form-control" />
+						<input type="password" asp-for="RModel.ConfirmPassword" class="form-control" />
 						<span asp-validation-for="RModel.ConfirmPassword" class="text-danger"></span>
 					</div>
 

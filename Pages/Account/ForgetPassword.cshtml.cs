@@ -43,7 +43,7 @@ namespace Spoonful.Pages.Account
             }
             var user = await _userManager.FindByEmailAsync(Email);
 
-            TempData["FlashMessage.Text"] = $"A reset password email will be sent to {user.Email} if it is valid";
+            TempData["FlashMessage.Text"] = $"A reset password email will be sent to {Email} if it is valid";
             TempData["FlashMessage.Type"] = "info";
 
             if (user == null)

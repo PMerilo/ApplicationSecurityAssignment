@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.WebUtilities;
 using Spoonful.Services;
 using System.Text.Encodings.Web;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.DataProtection;
+using System.Web;
 
 namespace ApplicationSecurityAssignment.Pages
 {
@@ -16,20 +19,46 @@ namespace ApplicationSecurityAssignment.Pages
         private readonly ISmsSender smsSender;
         private UserManager<ApplicationUser> userManager { get; }
 		private SignInManager<ApplicationUser> signInManager { get; }
+		private IDataProtectionProvider _dataProtectionProvider;
 
-		public HomeModel(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailService emailService, ISmsSender smsSender)
+		public HomeModel(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailService emailService, ISmsSender smsSender, IDataProtectionProvider dataProtectionProvider)
 		{
 			this.userManager = userManager;
 			this.signInManager = signInManager;
             this.emailService = emailService;
             this.smsSender = smsSender;
+            _dataProtectionProvider = dataProtectionProvider;
 		}
-        [BindProperty]
-		public ApplicationUser RModel { get; set; }
-		public async Task<IActionResult> OnGet()
+        public string FullName { get; set; }
+
+        public string Email { get; set; }
+
+        public string Gender { get; set; }
+
+        public string PhoneNumber { get; set; }
+        public bool PhoneNumberConfirmed { get; set; }
+
+        public string DeliveryAddress { get; set; }
+
+        public string CreditCard { get; set; }
+
+        public string? AboutMe { get; set; }
+        public string? PhotoURL { get; set; }
+        public bool Enabled2FA { get; set; } 
+        public async Task<IActionResult> OnGet()
 		{
 			var user = await userManager.GetUserAsync(User);
-			RModel = user;
+			var protector = _dataProtectionProvider.CreateProtector("MySecretKey");
+			FullName = user.FullName;
+			Email = user.Email;
+			Gender = user.Gender;
+			PhoneNumber = user.PhoneNumber;
+			DeliveryAddress = HttpUtility.HtmlDecode(user.DeliveryAddress);
+			CreditCard = protector.Unprotect(user.CreditCard);
+			AboutMe = HttpUtility.HtmlDecode(user.AboutMe);
+            PhotoURL = user.PhotoURL;
+            Enabled2FA = user.TwoFactorEnabled;
+            PhoneNumberConfirmed = user.PhoneNumberConfirmed;
 			//if (!user.EmailConfirmed)
 			//{
 			//	TempData["FlashMessage.Link"] = "You email has not been verified! Click here to verify it.";
@@ -74,13 +103,17 @@ namespace ApplicationSecurityAssignment.Pages
         {
 			var user = await userManager.GetUserAsync(User);
 			await userManager.SetTwoFactorEnabledAsync(user, true);
-            return RedirectToPage();
+			TempData["FlashMessage.Text"] = "2FA Enabled";
+			TempData["FlashMessage.Type"] = "success";
+			return RedirectToPage();
 		}
 
 		public async Task<IActionResult> OnPostDisable2FA()
 		{
 			var user = await userManager.GetUserAsync(User);
 			await userManager.SetTwoFactorEnabledAsync(user, false);
+			TempData["FlashMessage.Text"] = "2FA Disabled";
+			TempData["FlashMessage.Type"] = "warning";
 			return RedirectToPage();
 		}
 

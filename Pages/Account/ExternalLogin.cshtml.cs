@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Text;
 using Microsoft.AspNetCore.DataProtection;
+using System.Web;
 
 namespace ApplicationSecurityAssignment.Pages.Account
 {
@@ -34,9 +35,9 @@ namespace ApplicationSecurityAssignment.Pages.Account
 			return new ChallengeResult(provider, properties);
 		}
 
-		public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
+		public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string? remoteError = null)
 		{
-			returnUrl = returnUrl ?? Url.Content("~/");
+			returnUrl = returnUrl ?? Url.Content("~/Home");
 			if (remoteError != null)
 			{
 				//ErrorMessage = $"Error from external provider: {remoteError}";
@@ -97,10 +98,10 @@ namespace ApplicationSecurityAssignment.Pages.Account
 					FullName = RModel.FullName,
 					Gender = RModel.Gender,
 					PhoneNumber = "+65" + RModel.MobileNumber,
-					DeliveryAddress = RModel.DeliveryAddress,
+					DeliveryAddress = HttpUtility.HtmlEncode(RModel.DeliveryAddress),
 					CreditCard = protector.Protect(RModel.CreditCard),
-					AboutMe = RModel.AboutMe
-				};
+					AboutMe = HttpUtility.HtmlEncode(RModel.AboutMe)
+                };
 
                 var result = await userManager.CreateAsync(user);
                 if (result.Succeeded)
@@ -109,7 +110,8 @@ namespace ApplicationSecurityAssignment.Pages.Account
                     if (result.Succeeded)
                     {
                         await signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
-                        return LocalRedirect(returnUrl);
+						await userManager.UpdateSecurityStampAsync(user);
+						return LocalRedirect(returnUrl);
                     }
                 }
                 foreach (var error in result.Errors)
@@ -126,6 +128,7 @@ namespace ApplicationSecurityAssignment.Pages.Account
 		public class Register
 		{
 			[Required]
+			[RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Invalid Name")]
 			public string FullName { get; set; }
 
 			[Required]

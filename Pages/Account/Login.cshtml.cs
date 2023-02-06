@@ -4,7 +4,9 @@ using AspNetCore.ReCaptcha;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.WebUtilities;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace ApplicationSecurityAssignment.Pages.Account
 {
@@ -28,7 +30,7 @@ namespace ApplicationSecurityAssignment.Pages.Account
         }
         public void OnGet()
         {
-            ReturnUrl = Url.Content("~/");
+            ReturnUrl = Url.Content("~/Home");
 
 		}
 
@@ -43,8 +45,12 @@ namespace ApplicationSecurityAssignment.Pages.Account
                 {
                     if (user.LastPasswordChanged.AddMonths(1).CompareTo(DateTimeOffset.UtcNow) < 0)
                     {
-                        _signInManager.SignOutAsync();
-                        return RedirectToPage("/Account/ResetPassword");
+                        await _signInManager.SignOutAsync();
+                        var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        TempData["FlashMessage.Text"] = "Your password is too old. Please change your password to continue to login";
+                        TempData["FlashMessage.Type"] = "warning";
+                        return RedirectToPage("/Account/ResetPassword", new {code = code, username = user.UserName});
                     }
                     _auditService.Log(new AuditLog
                     {
@@ -54,11 +60,21 @@ namespace ApplicationSecurityAssignment.Pages.Account
                         ApplicationUserId = user.Id,
                         ApplicationUser = user,
                     });
+                    await _userManager.UpdateSecurityStampAsync(user);
                     return RedirectToPage("/Home");
                 }
                 if (identityResult.RequiresTwoFactor)
                 {
-                    return RedirectToPage("/Account/2FA");
+					if (user.LastPasswordChanged.AddMonths(1).CompareTo(DateTimeOffset.UtcNow) < 0)
+					{
+						await _signInManager.SignOutAsync();
+						var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+						code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+						TempData["FlashMessage.Text"] = "Your password is too old. Please change your password to continue to login";
+						TempData["FlashMessage.Type"] = "warning";
+						return RedirectToPage("/Account/ResetPassword", new { code = code, username = user.UserName });
+					}
+					return RedirectToPage("/Account/2FA");
                 }
 				if (identityResult.IsLockedOut)
 				{

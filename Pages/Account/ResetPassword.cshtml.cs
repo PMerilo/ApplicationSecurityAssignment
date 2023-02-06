@@ -66,6 +66,7 @@ namespace Spoonful.Pages.Account
 				TempData["FlashMessage.Type"] = "danger";
 				return Page();
 			}
+            applicationUserService.UpdatePreviousPassword(user.UserName);
             var result = await userManager.ResetPasswordAsync(user, token, Password);
             if (!result.Succeeded)
             {
@@ -73,12 +74,8 @@ namespace Spoonful.Pages.Account
                 {
                     ModelState.AddModelError("", error.Description);
                 }
-                TempData["FlashMessage.Text"] = "Invalid Tokens";
-                TempData["FlashMessage.Type"] = "danger";
                 return Page();
             }
-            applicationUserService.UpdatePreviousPassword(user.UserName);
-
             auditService.Log(new AuditLog
             {
                 Action = AuditService.Event.ChangePassword,
@@ -88,7 +85,7 @@ namespace Spoonful.Pages.Account
                 ApplicationUser = user
             });
 
-            TempData["FlashMessage.Text"] = "Successfully reset password!";
+            TempData["FlashMessage.Text"] = "Successfully reset password! Please login with your new password";
             TempData["FlashMessage.Type"] = "success";
             return RedirectToPage("/Account/Login");
             

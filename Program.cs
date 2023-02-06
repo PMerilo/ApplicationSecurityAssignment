@@ -71,6 +71,11 @@ builder.Services.ConfigureApplicationCookie(config =>
 	config.SlidingExpiration = true;
 });
 
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+	options.ValidationInterval = TimeSpan.FromSeconds(10);
+});
+
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>

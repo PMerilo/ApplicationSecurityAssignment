@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Spoonful.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace ApplicationSecurityAssignment.Pages.Account
 {
@@ -51,10 +52,10 @@ namespace ApplicationSecurityAssignment.Pages.Account
 					UserName = RModel.Email,
 					Gender = RModel.Gender,
 					PhoneNumber = "+65" + RModel.MobileNumber,
-					DeliveryAddress = RModel.DeliveryAddress,
+					DeliveryAddress = HttpUtility.HtmlEncode(RModel.DeliveryAddress),
 					CreditCard = protector.Protect(RModel.CreditCard),
-					AboutMe = RModel.AboutMe
-				};
+					AboutMe = HttpUtility.HtmlEncode(RModel.AboutMe)
+            };
 				if (RModel.Photo != null)
 				{
 					if (RModel.Photo.Length > 2 * 1024 * 1024)
@@ -105,7 +106,8 @@ namespace ApplicationSecurityAssignment.Pages.Account
 		public class Register
         {
 			[Required]
-			public string FullName { get; set; }
+            [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Invalid Name")]
+            public string FullName { get; set; }
 
 			[Required]
 			[DataType(DataType.EmailAddress)]

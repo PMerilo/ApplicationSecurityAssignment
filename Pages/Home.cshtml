@@ -7,81 +7,74 @@
 	<div class="row justify-content-center align-items-center">
 
 		<div class="col-sm-12 col-md-12 col-lg-8">
-			<h1 class="mb-3">Register </h1>
+			<h1 class="mb-3">My Profile </h1>
 			<div class="mb-3 d-flex">
 				<img id="imgPreview" class="rounded-circle mx-auto"
 					 style="height:300px;width:300px;object-fit:cover"
-					 src="@(string.IsNullOrEmpty(Model.RModel.PhotoURL) ?
-"/uploads/user.png" : Model.RModel.PhotoURL)"
+					 src="@(string.IsNullOrEmpty(Model.PhotoURL) ?
+"/uploads/user.png" : Model.PhotoURL)"
 					 onerror="this.src='/uploads/user.png'" />
 			</div>
 			<form method="post" enctype="multipart/form-data">
 				<div class="row">
 
 					<div class="mb-3">
-						<label class="form-label" asp-for="RModel.FullName">Full Name</label>
-						<input type="Text" asp-for="RModel.FullName" class="form-control" />
-						<span asp-validation-for="RModel.FullName" class="text-danger"></span>
+						<label class="form-label fw-bold" asp-for="FullName">Full Name:</label>
+						<div>@Model.FullName</div>
 					</div>
 
 					<div class="mb-3">
-						<label class="form-label" asp-for="RModel.Email">Email Address</label>
-						<input type="email" asp-for="RModel.Email" class="form-control" />
-						<span asp-validation-for="RModel.Email" class="text-danger"></span>
+						<label class="form-label fw-bold" asp-for="Email">Email Address:</label>
+						<div>@Model.Email</div>
 					</div>
 
 					<div class="mb-3">
-						<label class="col-sm-2 col-form-label" asp-for="RModel.Gender"></label>
-						<div class="col-sm-10 d-flex align-items-center">
-							<div class="form-check form-check-inline">
-								@Html.RadioButtonFor(m => m.RModel.Gender, "M",
-								new {@class = "form-check-input"})
-								<label class="form-check-label">Male</label>
-							</div>
-							<div class="form-check form-check-inline">
-								@Html.RadioButtonFor(m => m.RModel.Gender, "F",
-								new {@class = "form-check-input"})
-								<label class="form-check-label">Female</label>
-							</div>
-							<span asp-validation-for="RModel.Gender" class="text-danger"></span>
+						<label class="form-label fw-bold" asp-for="Gender">Gender:</label>
+						<div>@Model.Gender</div>
+					</div>
+
+
+					<div class="mb-3">
+						<label class="form-label fw-bold" asp-for="PhoneNumber">Mobile Number:</label>
+						<div>
+							@Model.PhoneNumber
+							@if (!Model.PhoneNumberConfirmed)
+							{	
+							<button type="submit" asp-route-provider="Phone" asp-page-handler="SendCode" class="btn btn-primary">Verify</button>
+							}
 						</div>
 					</div>
 
-
 					<div class="mb-3">
-						<label class="form-label" asp-for="RModel.PhoneNumber">Mobile Number</label>
-						<input type="tel" asp-for="RModel.PhoneNumber" class="form-control col-11" />
-						<button type="submit" asp-route-provider="Phone" asp-page-handler="SendCode" class="btn btn-primary">Verify</button>
+						<label class="form-label fw-bold" asp-for="DeliveryAddress">Delivery Address:</label>
+						<div>@Model.DeliveryAddress</div>
 					</div>
 
 					<div class="mb-3">
-						<label class="form-label" asp-for="RModel.DeliveryAddress">Delivery Address</label>
-						<input type="Text" asp-for="RModel.DeliveryAddress" class="form-control" />
-						<span asp-validation-for="RModel.DeliveryAddress" class="text-danger"></span>
+						<label class="form-label fw-bold" asp-for="CreditCard">Credit Card:</label>
+						<div>@Model.CreditCard</div>
 					</div>
 
 					<div class="mb-3">
-						<label class="form-label" asp-for="RModel.CreditCard">Credit Card</label>
-						<input type="Text" asp-for="RModel.CreditCard" class="form-control" />
-						<span asp-validation-for="RModel.CreditCard" class="text-danger"></span>
-					</div>
-
-					<div class="mb-3">
-						<label class="form-label" asp-for="RModel.AboutMe">About Me</label>
-						<textarea rows="2" asp-for="RModel.AboutMe" class="form-control"></textarea>
-						<span asp-validation-for="RModel.AboutMe" class="text-danger"></span>
+						<label class="form-label fw-bold" asp-for="AboutMe">About Me:</label>
+						<div>@Model.AboutMe</div>
 					</div>
 
 				</div>
-				<div asp-validation-summary="All" class="text-danger"></div>
-				@Html.ReCaptcha()
 			</form>
-            <form method="post">
-				<button type="submit" asp-page-handler="Enable2FA" class="btn btn-primary">Enable 2FA</button>
-			</form>
-            <form method="post">
-				<button type="submit" asp-page-handler="Disable2FA" class="btn btn-primary">Disable 2FA</button>
-			</form>
+            <div class="d-flex col-4 justify-content-between">
+				@if (!Model.Enabled2FA)
+				{
+					<form method="post">
+						<button type="submit" asp-page-handler="Enable2FA" class="btn btn-primary">Enable 2FA</button>
+					</form>
+				} else
+				{
+					<form method="post">
+						<button type="submit" asp-page-handler="Disable2FA" class="btn btn-primary">Disable 2FA</button>
+					</form>
+				}
+			</div>
 
 		</div>
 	</div>

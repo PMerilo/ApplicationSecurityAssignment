@@ -21,7 +21,7 @@
 
 				<div class="mb-3">
 					<label class="form-label" asp-for="LModel.Password">Password</label>
-					<input type="Text" asp-for="LModel.Password" class="form-control" />
+					<input type="password" asp-for="LModel.Password" class="form-control" />
 					<span asp-validaton-for="LModel.Password" class="text-danger"></span>
 				</div>
 
@@ -49,10 +49,8 @@
 				@Html.ReCaptcha()
 			</form>
 			<form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                <div>
-                    <p>
-                        <button type="submit" class="btn btn-primary" name="provider" value="Google" title="Log in using your"> </button>
-                    </p>
+				<div class="mb-3 d-grid">
+                     <button type="submit" class="btn btn-primary" name="provider" value="Google">Google Login</button>
                 </div>
             </form>
 		</div>
