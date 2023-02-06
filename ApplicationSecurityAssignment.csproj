@@ -19,6 +19,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="sib_api_v3_sdk" Version="3.3.0" />
+    <PackageReference Include="Twilio" Version="6.2.2" />
   </ItemGroup>
 
 </Project>

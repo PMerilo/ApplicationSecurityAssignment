@@ -66,7 +66,6 @@ namespace Spoonful.Pages.Account
 				TempData["FlashMessage.Type"] = "danger";
 				return Page();
 			}
-            applicationUserService.UpdatePreviousPassword(user.UserName);
             var result = await userManager.ResetPasswordAsync(user, token, Password);
             if (!result.Succeeded)
             {
@@ -78,6 +77,7 @@ namespace Spoonful.Pages.Account
                 TempData["FlashMessage.Type"] = "danger";
                 return Page();
             }
+            applicationUserService.UpdatePreviousPassword(user.UserName);
 
             auditService.Log(new AuditLog
             {

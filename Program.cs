@@ -1,8 +1,10 @@
 using ApplicationSecurityAssignment.Models;
 using ApplicationSecurityAssignment.Services;
+using ApplicationSecurityAssignment.Settings;
 using AspNetCore.ReCaptcha;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using sib_api_v3_sdk.Client;
 using Spoonful.Services;
 using Spoonful.Settings;
 
@@ -18,7 +20,7 @@ builder.Services.AddRazorPages(options =>
 	options.Conventions.AllowAnonymousToPage("/Privacy");
 	options.Conventions.AllowAnonymousToPage("/Index");
 	options.Conventions.AllowAnonymousToPage("/Error");
-	options.Conventions.AllowAnonymousToPage("/ExternalLogin");
+	options.Conventions.AllowAnonymousToPage("/Account/ExternalLogin");
 	options.Conventions.AllowAnonymousToFolder("/Error");
 
 	options.Conventions.AuthorizePage("/Admin", "RequireAdministratorRole");
@@ -34,6 +36,12 @@ var emailConfig = builder.Configuration
 		.Get<EmailConfiguration>();
 builder.Services.AddSingleton(emailConfig);
 builder.Services.AddScoped<IEmailService, EmailService>();
+var smsConfig = builder.Configuration
+		.GetSection("SMSConfiguration")
+		.Get<SMSoptions>();
+builder.Services.AddSingleton(smsConfig);
+builder.Services.AddTransient<ISmsSender, SMSSender>();
+builder.Services.Configure<SMSoptions>(builder.Configuration);
 builder.Services.AddScoped<ApplicationUserService>();
 builder.Services.AddScoped<AuditService>();
 
@@ -77,15 +85,15 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
     googleOptions.ClientSecret = builder.Configuration["Authentication:Google:client_secret"];
 });
 
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-//        .RequireAuthenticatedUser()
-//        .Build();
+builder.Services.AddAuthorization(options =>
+{
+	options.FallbackPolicy = new AuthorizationPolicyBuilder()
+		.RequireAuthenticatedUser()
+		.Build();
 
-//    options.AddPolicy("RequireAdministratorRole",
-//         policy => policy.RequireRole(Roles.Admin));
-//});
+	options.AddPolicy("RequireAdministratorRole",
+		 policy => policy.RequireRole(Roles.Admin));
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
