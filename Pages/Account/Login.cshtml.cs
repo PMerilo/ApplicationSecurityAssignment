@@ -41,6 +41,11 @@ namespace ApplicationSecurityAssignment.Pages.Account
                 var user = await _userManager.FindByEmailAsync(LModel.Email);
                 if (identityResult.Succeeded)
                 {
+                    if (user.LastPasswordChanged.AddMonths(1).CompareTo(DateTimeOffset.UtcNow) < 0)
+                    {
+                        _signInManager.SignOutAsync();
+                        return RedirectToPage("/Account/ResetPassword");
+                    }
                     _auditService.Log(new AuditLog
                     {
                         Action =  AuditService.Event.Login,

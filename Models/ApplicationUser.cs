@@ -29,6 +29,8 @@ namespace ApplicationSecurityAssignment.Models
 		[PersonalData]
 		public string? PhotoURL { get; set; }
 
+		public DateTimeOffset LastPasswordChanged { get; set; } = DateTimeOffset.UtcNow;
+
 		public ICollection<PreviousPassword> PreviousPassword { get; set;}
 
 	}
