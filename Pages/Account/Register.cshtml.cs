@@ -1,37 +1,45 @@
 using ApplicationSecurityAssignment.Models;
+using ApplicationSecurityAssignment.Services;
+using AspNetCore.ReCaptcha;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Spoonful.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace ApplicationSecurityAssignment.Pages.Account
 {
-    public class RegisterModel : PageModel
+	[ValidateReCaptcha]
+	public class RegisterModel : PageModel
     {
 		private UserManager<ApplicationUser> userManager { get; }
 		private SignInManager<ApplicationUser> signInManager { get; }
 		private IWebHostEnvironment _environment;
 		private IDataProtectionProvider _dataProtectionProvider;
+        private readonly AuditService _auditService;
+        private readonly ApplicationUserService _applicationUserService;
 
-		[BindProperty]
+        [BindProperty]
 		public Register RModel { get; set; }
 		public RegisterModel(UserManager<ApplicationUser> userManager,
-		SignInManager<ApplicationUser> signInManager, IWebHostEnvironment environment, IDataProtectionProvider dataProtectionProvider)
+		SignInManager<ApplicationUser> signInManager, IWebHostEnvironment environment, IDataProtectionProvider dataProtectionProvider, AuditService auditService, ApplicationUserService  applicationUserService)
 		{
 			this.userManager = userManager;
 			this.signInManager = signInManager;
 			this._environment = environment;
 			this._dataProtectionProvider = dataProtectionProvider;
+			this._auditService = auditService;
+			this._applicationUserService = applicationUserService;
 
 		}
 		public void OnGet()
         {
         }
 
-        public async Task<IActionResult> OnPost()
+		public async Task<IActionResult> OnPost()
         {
 			if (ModelState.IsValid)
 			{
@@ -45,8 +53,7 @@ namespace ApplicationSecurityAssignment.Pages.Account
 					PhoneNumber = RModel.MobileNumber,
 					DeliveryAddress = RModel.DeliveryAddress,
 					CreditCard = protector.Protect(RModel.CreditCard),
-					AboutMe = RModel.AboutMe,
-					PhotoURL = "",
+					AboutMe = RModel.AboutMe
 				};
 				if (RModel.Photo != null)
 				{
@@ -70,11 +77,24 @@ namespace ApplicationSecurityAssignment.Pages.Account
 				var result = await userManager.CreateAsync(user, RModel.Password);
 				if (result.Succeeded)
 				{
-					await signInManager.SignInAsync(user, false);
-					return RedirectToPage("Index");
+                    await _applicationUserService.SetUserRoleAsync(user.UserName, Roles.Member);
+                    _auditService.Log(new AuditLog
+                    {
+                        Action = AuditService.Event.Register,
+                        Description = "This user was created at /Account/Register",
+                        Role = (await userManager.GetRolesAsync(user)).FirstOrDefault(),
+                        ApplicationUserId = user.Id,
+                        ApplicationUser = user
+                    });
+                    await signInManager.SignInAsync(user, false);
+					return RedirectToPage("/Index");
 				}
 				foreach (var error in result.Errors)
 				{
+					if (error.Code == "DuplicateUserName")
+					{
+						continue;
+					}
 					ModelState.AddModelError("", error.Description);
 				}
 			}
@@ -96,6 +116,7 @@ namespace ApplicationSecurityAssignment.Pages.Account
 
 			[Required]
 			[DataType(DataType.PhoneNumber)]
+			[RegularExpression(@"^([0-9]{8,})$", ErrorMessage = "Invalid Mobile Number")]
 			public string MobileNumber { get; set; }
 
 			[Required]
@@ -103,10 +124,12 @@ namespace ApplicationSecurityAssignment.Pages.Account
 
 			[Required]
 			[DataType(DataType.CreditCard)]
+			[RegularExpression(@"^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|6(?:011|5[0-9]{2})[0-9]{12}|(?:2131|1800|35\d{3})\d{11})$", ErrorMessage = "Invalid Credit Card Number")]
 			public string CreditCard { get; set; }
 
 			[Required]
 			[DataType(DataType.Password)]
+			[RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{12,}$", ErrorMessage = "Invalid Password.")]
 			public string Password { get; set; }
 
 			[Required]

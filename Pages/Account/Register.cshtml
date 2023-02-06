@@ -1,9 +1,9 @@
 ﻿@page
+@using AspNetCore.ReCaptcha;
 @model ApplicationSecurityAssignment.Pages.Account.RegisterModel
 @{
 }
 <div class="container mt-5">
-
 	<div class="row justify-content-center align-items-center">
 
 		<div class="col-sm-12 col-md-12 col-lg-8">
@@ -13,11 +13,10 @@
 					 style="height:300px;width:300px;object-fit:cover"
 					 src="/uploads/user.png" />
 			</div>
-			<div asp-validation-summary="All" class="text-danger"></div>
 			<form method="post" enctype="multipart/form-data">
                 <div class="row">
 					<div class="mb-3">
-						<input type="file" accept="image/jpg" asp-for="RModel.Photo"
+						<input type="file" accept=".jpg" asp-for="RModel.Photo"
 								class="form-control" onchange="showImgPreview(this)" />
 						<span asp-validation-for="RModel.Photo" class="text-danger"></span>
 					</div>
@@ -25,13 +24,13 @@
 					<div class="mb-3">
 						<label class="form-label" asp-for="RModel.FullName">Full Name</label>
 						<input type="Text" asp-for="RModel.FullName" class="form-control" />
-						<span asp-validaton-for="RModel.FullName" class="text-danger"></span>
+						<span asp-validation-for="RModel.FullName" class="text-danger"></span>
 					</div>
 
 					<div class="mb-3">
 						<label class="form-label" asp-for="RModel.Email">Email Address</label>
-						<input type="Text" asp-for="RModel.Email" class="form-control" />
-						<span asp-validaton-for="RModel.Email" class="text-danger"></span>
+						<input type="email" asp-for="RModel.Email" class="form-control" />
+						<span asp-validation-for="RModel.Email" class="text-danger"></span>
 					</div>
 
 					<div class="mb-3">
@@ -54,45 +53,47 @@
 
 					<div class="mb-3">
 						<label class="form-label" asp-for="RModel.MobileNumber">Mobile Number</label>
-						<input type="tel" asp-for="RModel.MobileNumber" class="form-control" />
-						<span asp-validaton-for="RModel.MobileNumber" class="text-danger"></span>
+						<input type="tel" asp-for="RModel.MobileNumber" class="form-control"/>
+						<span asp-validation-for="RModel.MobileNumber" class="text-danger"></span>
 					</div>
 
 					<div class="mb-3">
 						<label class="form-label" asp-for="RModel.DeliveryAddress">Delivery Address</label>
 						<input type="Text" asp-for="RModel.DeliveryAddress" class="form-control" />
-						<span asp-validaton-for="RModel.DeliveryAddress" class="text-danger"></span>
+						<span asp-validation-for="RModel.DeliveryAddress" class="text-danger"></span>
 					</div>
 
 					<div class="mb-3">
 						<label class="form-label" asp-for="RModel.CreditCard">Credit Card</label>
 						<input type="Text" asp-for="RModel.CreditCard" class="form-control" />
-						<span asp-validaton-for="RModel.CreditCard" class="text-danger"></span>
+						<span asp-validation-for="RModel.CreditCard" class="text-danger"></span>
 					</div>
 
 					<div class="mb-3">
 						<label class="form-label" asp-for="RModel.AboutMe">About Me</label>
 						<textarea rows="2" asp-for="RModel.AboutMe" class="form-control"></textarea>
-						<span asp-validaton-for="RModel.AboutMe" class="text-danger"></span>
+						<span asp-validation-for="RModel.AboutMe" class="text-danger"></span>
 					</div>
 
 					<div class="mb-3">
 						<label class="form-label" asp-for="RModel.Password">Password</label>
-						<input type="Text" asp-for="RModel.Password" class="form-control" />
-						<span asp-validaton-for="RModel.Password" class="text-danger"></span>
+						<input type="Text" asp-for="RModel.Password" class="form-control" id="passwd"/>
+						<span asp-validation-for="RModel.Password" class="text-danger"></span>
+						<span class="text-danger" id="pwvalidation"></span>
 					</div>
 
 					<div class="mb-3">
 						<label class="form-label" asp-for="RModel.ConfirmPassword">Confirm Password</label>
 						<input type="Text" asp-for="RModel.ConfirmPassword" class="form-control" />
-						<span asp-validaton-for="RModel.ConfirmPassword" class="text-danger"></span>
+						<span asp-validation-for="RModel.ConfirmPassword" class="text-danger"></span>
 					</div>
 
 				</div>
-
+				<div asp-validation-summary="All" class="text-danger"></div>
 				<div class="d-grid mb-3">
 					<button type="submit" class="btn btn-primary">Register</button>
 				</div>
+				@Html.ReCaptcha()
 			</form>
 		</div>
 	</div>
@@ -109,3 +110,10 @@
 		}
 	}
 </script>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<script src="/js/register.js"></script>
+}

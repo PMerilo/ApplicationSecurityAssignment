@@ -1,0 +1,14 @@
+﻿Confirm Input validation and prevention of injection attacks
+2FA w otp
+	Configure SMS service
+
+//Role based Authorization
+
+//External Login provider
+
+Password reuse policy
+	Password age
+
+//Audit log
+
+Check mulitple logins

@@ -1,50 +1,64 @@
 ﻿@page
+@using AspNetCore.ReCaptcha;
 @model ApplicationSecurityAssignment.Pages.Account.LoginModel
 @{
     
 }
-<div class="container h-100">
-    <div class="d-flex justify-content-center h-100">
-        <div class="user_card">
-            <div class="d-flex justify-content-center">
-                <div class="brand_logo_container">
-                    <img src="https://cdn.freebiesupply.com/logos/large/2x/pinterest-circle-logo-png-transparent.png" class="brand_logo" alt="Logo" height="100" width="100">
-                </div>
-            </div>
-            <div class="d-flex justify-content-center form_container">
-                <form method="post">
-                    <div class="input-group mb-3">
-                        <div class="input-group-append">
-                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        </div>
-                        <input type="text" name="" class="form-control input_user" value="" placeholder="username">
-                    </div>
-                    <div class="input-group mb-2">
-                        <div class="input-group-append">
-                            <span class="input-group-text"><i class="fas fa-key"></i></span>
-                        </div>
-                        <input type="password" name="" class="form-control input_pass" value="" placeholder="password">
-                    </div>
-                    <div class="form-group">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="customControlInline">
-                            <label class="custom-control-label" for="customControlInline">Remember me</label>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-center mt-3 login_container">
-                        <button type="button" name="button" class="btn login_btn">Login</button>
-                    </div>
-                </form>
-            </div>
+<div class="container mt-5">
 
-            <div class="mt-4">
-                <div class="d-flex justify-content-center links">
-                    Don't have an account? <a asp-page="/Account/Register" class="ml-2">Sign Up</a>
+	<div class="row justify-content-center align-items-center">
+
+		<div class="col-sm-12 col-md-12 col-lg-4">
+			<h1 class="mb-3">Login </h1>
+
+			<form method="post">
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="LModel.Email">Email Address</label>
+					<input type="Text" asp-for="LModel.Email" class="form-control" />
+					<span asp-validaton-for="LModel.Email" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="LModel.Password">Password</label>
+					<input type="Text" asp-for="LModel.Password" class="form-control" />
+					<span asp-validaton-for="LModel.Password" class="text-danger"></span>
+				</div>
+
+				<div class="row mb-4">
+					<div class="col-md-6 d-flex justify-content-start">
+						<!-- Checkbox -->
+						<div class="form-check mb-3 mb-md-0">
+							<input class="form-check-input" type="checkbox" id="loginCheck" asp-for="LModel.RememberMe" />
+							<label class="form-check-label" asp-for="LModel.RememberMe"> Remember me </label>
+						</div>
+					</div>
+
+					<div class="col-md-6 d-flex justify-content-end">
+						<!-- Simple link -->
+						<a asp-page="ForgetPassword">Forgot password?</a>
+					</div>
+				</div>
+
+				<div asp-validation-summary="All" class="text-danger"></div>
+
+				<div class="mb-3 d-grid">
+					<button type="submit" class="btn btn-primary">Login</button>
+				</div>
+			
+				@Html.ReCaptcha()
+			</form>
+			<form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                <div>
+                    <p>
+                        <button type="submit" class="btn btn-primary" name="provider" value="Google" title="Log in using your"> </button>
+                    </p>
                 </div>
-                <div class="d-flex justify-content-center links">
-                    <a asp-page="/Account">Forgot your password?</a>
-                </div>
-            </div>
-        </div>
-    </div>
+            </form>
+		</div>
+	</div>
 </div>
+
+@section Scripts {
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
+}

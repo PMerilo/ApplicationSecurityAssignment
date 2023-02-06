@@ -27,6 +27,9 @@ namespace ApplicationSecurityAssignment.Models
 		public string? AboutMe { get; set; }
 
 		[PersonalData]
-		public string PhotoURL { get; set; }
+		public string? PhotoURL { get; set; }
+
+		public ICollection<PreviousPassword> PreviousPassword { get; set;}
+
 	}
 }
