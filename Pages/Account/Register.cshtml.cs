@@ -50,7 +50,7 @@ namespace ApplicationSecurityAssignment.Pages.Account
 					Email = RModel.Email,
 					UserName = RModel.Email,
 					Gender = RModel.Gender,
-					PhoneNumber = RModel.MobileNumber,
+					PhoneNumber = "+65" + RModel.MobileNumber,
 					DeliveryAddress = RModel.DeliveryAddress,
 					CreditCard = protector.Protect(RModel.CreditCard),
 					AboutMe = RModel.AboutMe

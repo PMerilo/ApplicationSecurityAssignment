@@ -56,6 +56,10 @@ namespace ApplicationSecurityAssignment.Pages.Account
                     });
                     return RedirectToPage("/Home");
                 }
+                if (identityResult.RequiresTwoFactor)
+                {
+                    return RedirectToPage("/Account/2FA");
+                }
 				if (identityResult.IsLockedOut)
 				{
 					ModelState.AddModelError("", "You have too many failed attempts please try again later");

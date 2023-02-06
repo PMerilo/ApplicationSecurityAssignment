@@ -96,7 +96,7 @@ namespace ApplicationSecurityAssignment.Pages.Account
                     Email = RModel.Email,
 					FullName = RModel.FullName,
 					Gender = RModel.Gender,
-					PhoneNumber = RModel.MobileNumber,
+					PhoneNumber = "+65" + RModel.MobileNumber,
 					DeliveryAddress = RModel.DeliveryAddress,
 					CreditCard = protector.Protect(RModel.CreditCard),
 					AboutMe = RModel.AboutMe

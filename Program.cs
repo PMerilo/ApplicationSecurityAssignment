@@ -20,6 +20,7 @@ builder.Services.AddRazorPages(options =>
 	options.Conventions.AllowAnonymousToPage("/Privacy");
 	options.Conventions.AllowAnonymousToPage("/Index");
 	options.Conventions.AllowAnonymousToPage("/Error");
+	options.Conventions.AllowAnonymousToPage("/Account/2FA");
 	options.Conventions.AllowAnonymousToPage("/Account/ExternalLogin");
 	options.Conventions.AllowAnonymousToFolder("/Error");
 
