@@ -49,7 +49,7 @@ namespace ApplicationSecurityAssignment.Pages.Account
                         ApplicationUserId = user.Id,
                         ApplicationUser = user,
                     });
-                    return RedirectToPage("/Index");
+                    return RedirectToPage("/Home");
                 }
 				if (identityResult.IsLockedOut)
 				{

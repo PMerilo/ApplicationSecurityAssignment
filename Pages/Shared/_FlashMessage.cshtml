@@ -1,11 +1,17 @@
 ﻿@{
 	string? text = Convert.ToString(TempData["FlashMessage.Text"]); 
+	string? link = Convert.ToString(TempData["FlashMessage.Link"]); 
+	string? url = Convert.ToString(TempData["FlashMessage.Url"]); 
 	string? cssClass = string.Format("alert alert-{0} alert-dismissible fade show", Convert.ToString(TempData["FlashMessage.Type"]));
-} @if (!string.IsNullOrWhiteSpace(text))
+} @if (!string.IsNullOrWhiteSpace(text) || !string.IsNullOrWhiteSpace(link))
 {
 	 <div class="@cssClass" role="alert"> 
-		 @text 
-		 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+		 @text
+		@if (!string.IsNullOrWhiteSpace(link))
+		{
+			<a href="@url">@link</a>
+		}
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
 
 		 </button> 
 	</div>
