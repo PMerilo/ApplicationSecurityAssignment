@@ -38,6 +38,9 @@ namespace ApplicationSecurityAssignment.Pages
         public string PhoneNumber { get; set; }
         public bool PhoneNumberConfirmed { get; set; }
 
+        public string Password { get; set; }
+        public int MinPasswordAge { get; set; }
+
         public string DeliveryAddress { get; set; }
 
         public string CreditCard { get; set; }
@@ -59,6 +62,8 @@ namespace ApplicationSecurityAssignment.Pages
             PhotoURL = user.PhotoURL;
             Enabled2FA = user.TwoFactorEnabled;
             PhoneNumberConfirmed = user.PhoneNumberConfirmed;
+            Password = user.PasswordHash;
+            MinPasswordAge = user.LastPasswordChanged.AddDays(1).CompareTo(DateTimeOffset.UtcNow);
 			//if (!user.EmailConfirmed)
 			//{
 			//	TempData["FlashMessage.Link"] = "You email has not been verified! Click here to verify it.";

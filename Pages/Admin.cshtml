@@ -1,4 +1,33 @@
 ﻿@page
 @model ApplicationSecurityAssignment.Pages.AdminModel
-@{
-}
+<table class="table">
+    <thead>
+        <tr>
+            <td>
+                Action
+            </td>
+            <td>
+                Description
+            </td>
+            <td>
+                ApplicationUser
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.AuditList)
+    {
+        <tr>
+            <td>
+                @item.Action
+            </td>
+            <td>
+                @item.Description
+            </td>
+            <td>
+                @item.ApplicationUserId
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

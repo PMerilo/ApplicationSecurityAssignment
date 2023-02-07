@@ -128,7 +128,8 @@ namespace ApplicationSecurityAssignment.Pages.Account
 		public class Register
 		{
 			[Required]
-			[RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Invalid Name")]
+			[RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Invalid Name")]
+
 			public string FullName { get; set; }
 
 			[Required]

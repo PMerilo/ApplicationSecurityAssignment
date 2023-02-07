@@ -41,6 +41,12 @@ namespace ApplicationSecurityAssignment.Pages.Account
                 var identityResult = await _signInManager.PasswordSignInAsync(LModel.Email, LModel.Password,
                 LModel.RememberMe, true);
                 var user = await _userManager.FindByEmailAsync(LModel.Email);
+                if (user.PasswordHash == null)
+                {
+					TempData["FlashMessage.Text"] = "This user does not use a regular password login";
+					TempData["FlashMessage.Type"] = "warning";
+                    return Page();
+				}
                 if (identityResult.Succeeded)
                 {
                     if (user.LastPasswordChanged.AddMonths(1).CompareTo(DateTimeOffset.UtcNow) < 0)
@@ -61,19 +67,12 @@ namespace ApplicationSecurityAssignment.Pages.Account
                         ApplicationUser = user,
                     });
                     await _userManager.UpdateSecurityStampAsync(user);
-                    return RedirectToPage("/Home");
+                    await _signInManager.RefreshSignInAsync(user);
+
+					return RedirectToPage("/Home");
                 }
                 if (identityResult.RequiresTwoFactor)
                 {
-					if (user.LastPasswordChanged.AddMonths(1).CompareTo(DateTimeOffset.UtcNow) < 0)
-					{
-						await _signInManager.SignOutAsync();
-						var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-						code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-						TempData["FlashMessage.Text"] = "Your password is too old. Please change your password to continue to login";
-						TempData["FlashMessage.Type"] = "warning";
-						return RedirectToPage("/Account/ResetPassword", new { code = code, username = user.UserName });
-					}
 					return RedirectToPage("/Account/2FA");
                 }
 				if (identityResult.IsLockedOut)

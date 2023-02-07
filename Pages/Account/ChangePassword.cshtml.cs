@@ -12,16 +12,15 @@ using ApplicationSecurityAssignment.Services;
 
 namespace Spoonful.Pages.Account
 {
-    [AllowAnonymous]
     [BindProperties]
     [ValidateReCaptcha]
-    public class ResetPasswordModel : PageModel
+    public class ChangePasswordModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly ApplicationUserService applicationUserService;
         private readonly AuditService auditService;
-        public ResetPasswordModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ApplicationUserService applicationUserService, AuditService auditService)
+        public ChangePasswordModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ApplicationUserService applicationUserService, AuditService auditService)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
@@ -31,18 +30,34 @@ namespace Spoonful.Pages.Account
 
         [Required]
         [DataType(DataType.Password)]
+        public string OldPassword { get; set; }
+        
+        [Required]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
         [Compare(nameof(Password), ErrorMessage = "Passwords must match")]
         public string ConfirmPassword { get; set; }
+        //public async Task<IActionResult> OnGetAsync()
+        //{
+        //    var user = await userManager.GetUserAsync(User);
+        //    if (user.PasswordHash == null || user.LastPasswordChanged.AddDays(1).CompareTo(DateTimeOffset.UtcNow) > 0)
+        //    {
+        //        TempData["FlashMessage.Text"] = "You can only change your password after 1 day";
+        //        TempData["FlashMessage.Type"] = "danger";
+        //        return Redirect("/Home");
+        //    }
+        //    return Page();
+        //}
+
         public void OnGet()
         {
 
         }
 
-        public async Task<IActionResult> OnPostAsync(string code, string username)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
@@ -50,15 +65,15 @@ namespace Spoonful.Pages.Account
                 TempData["FlashMessage.Type"] = "danger";
                 return Page();
             }
-            var user = await userManager.FindByNameAsync(username);
+            var user = await userManager.GetUserAsync(User);
 
             if (user == null)
             {
-                TempData["FlashMessage.Text"] = "Invalid Tokens";
+                TempData["FlashMessage.Text"] = "Something went wrong";
                 TempData["FlashMessage.Type"] = "danger";
                 return Redirect("/");
             }
-			var token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
             if (!applicationUserService.ValidatePreviousPassword(user.UserName, Password))
             {
 				TempData["FlashMessage.Text"] = "Cannot use your previous 2 passwords";
@@ -66,7 +81,7 @@ namespace Spoonful.Pages.Account
 				return Page();
 			}
             applicationUserService.UpdatePreviousPassword(user.UserName);
-            var result = await userManager.ResetPasswordAsync(user, token, Password);
+            var result = await userManager.ChangePasswordAsync(user, OldPassword, Password);
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
@@ -84,9 +99,10 @@ namespace Spoonful.Pages.Account
                 ApplicationUser = user
             });
 
-            TempData["FlashMessage.Text"] = "Successfully reset password! Please login with your new password";
+            TempData["FlashMessage.Text"] = "Successfully Changed password! Please login with your new password";
             TempData["FlashMessage.Type"] = "success";
-            return RedirectToPage("/Account/Login");
+			await signInManager.RefreshSignInAsync(user);
+			return RedirectToPage("/Account/Login");
             
         }
     }

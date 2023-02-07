@@ -30,6 +30,11 @@ namespace ApplicationSecurityAssignment.Services
 			return _db.AuditLogs.ToList();
 		}
 
+		public List<AuditLog> GetByUser(string UserName)
+		{
+			return _db.AuditLogs.Where(a => a.ApplicationUserId == UserName).ToList();
+		}
+
 		public AuditLog? Get(int id)
 		{
 			return _db.AuditLogs.SingleOrDefault(a => a.Id == id);
